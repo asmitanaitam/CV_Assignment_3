@@ -1,0 +1,19 @@
+% Load Images
+I1 = imread('left.jpg');
+I2 = imread('right.jpg');
+
+% Feature Matching
+points1 = detectSURFFeatures(I1);
+points2 = detectSURFFeatures(I2);
+[f1, vpts1] = extractFeatures(I1, points1);
+[f2, vpts2] = extractFeatures(I2, points2);
+indexPairs = matchFeatures(f1, f2);
+matchedPoints1 = vpts1(indexPairs(:, 1));
+matchedPoints2 = vpts2(indexPairs(:, 2));
+
+% Estimating Fundamental Matrix
+[F, inliers] = estimateFundamentalMatrix(matchedPoints1, matchedPoints2, 'Method', 'RANSAC');
+
+% Rectifying Images
+[rectified1, rectified2] = rectifyStereoImages(I1, I2, F);
+
